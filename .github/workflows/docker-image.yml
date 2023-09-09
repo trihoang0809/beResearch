@@ -1,0 +1,24 @@
+name: Docker Container with Valhalla
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    # Set the environment variable for the tag
+    env:
+      IMAGE_TAG: ${{ github.run_id }}
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag valhalla-test:${{ env.IMAGE_TAG }}
+
+    - name: Run the Docker container and execute tests
+      run: docker run --name my-container valhalla-test:${{ env.IMAGE_TAG }} npm test
